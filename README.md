@@ -4,10 +4,11 @@ Copia el siguiente bloque y guárdalo como README.md en tu carpeta del proyecto:
 🚗 Clasificador de Vehículos IA (CIFAR-10)
 
 Python 3.12TensorFlowLicense
-👨‍🎓 Autor
 
+👨‍🎓 Autor
 Yohan Michel Perez Monzon
 Ingeniería Informática - 3er Año
+
 📝 Descripción del Proyecto
 
 Este proyecto consiste en un sistema de Visión Artificial desarrollado en Python capaz de identificar y clasificar diferentes tipos de vehículos (automóviles y camiones) utilizando técnicas de Aprendizaje Supervisado (Deep Learning).

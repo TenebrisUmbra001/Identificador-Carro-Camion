@@ -1,102 +1,97 @@
-Contenido del README.md 
+DIFERENCIACION DE CARROS Y CAMIONES EN IMÁGENES CON APRENDIZAJE SUPERVISADO
 
-Copia el siguiente bloque y guárdalo como README.md en tu carpeta del proyecto: 
-🚗 Clasificador de Vehículos IA (CIFAR-10)
+Proyecto: Agente de Clasificación de Vehículos 
+Autor: [Yohan Michel Perez Monzon]
+Carrera: Ingeniería Informática
+Año: 3er Año 
+                                                                                                                      Introducción 
 
-Python 3.12TensorFlowLicense
 
-👨‍🎓 Autor
-Yohan Michel Perez Monzon
-Ingeniería Informática - 3er Año
 
-📝 Descripción del Proyecto
 
-Este proyecto consiste en un sistema de Visión Artificial desarrollado en Python capaz de identificar y clasificar diferentes tipos de vehículos (automóviles y camiones) utilizando técnicas de Aprendizaje Supervisado (Deep Learning).
+El objetivo principal es desarrollar un "agente" inteligente que, tras un proceso de aprendizaje supervisado, sea capaz de recibir una imagen proporcionada por un usuario, analizar sus patrones visuales y predecir a qué categoría pertenece con un grado de confianza determinado. Para ello, se utiliza el dataset estándar CIFAR-10 y la biblioteca TensorFlow/Keras para implementar una Red Neuronal Convolucional (CNN). 
+                                                                                                                     Desarrollo 
 
-El sistema se entrena una vez utilizando datos en línea y luego funciona completamente Offline, permitiendo clasificar nuevas imágenes sin conexión a internet.
-🧠 ¿Cómo funciona el código?
+La solución se divide en dos fases distintas: entrenamiento e inferencia (uso del agente).  
+Fase de Entrenamiento: Se utiliza una red neuronal convolucional (CNN). Las CNN son el estándar en visión por computadora porque imitan la corteza visual humana, detectando características locales como bordes, texturas y formas, y luego combinándolas para identificar objetos complejos. 
+Fase de Inferencia: Una vez entrenado el modelo, este se guarda en disco. El segundo script actúa como el "agente", cargando el conocimiento adquirido y aplicándolo a nuevas imágenes sin conexión a internet. 
 
-El núcleo del proyecto es una Red Neuronal Convolucional (CNN) construida con TensorFlow/Keras. El proceso se divide en dos fases:
-1. Fase de Entrenamiento (entrenar_vehiculos.py)
+ Implementación del Entrenamiento 
+Para el entrenamiento, se utilizó el dataset CIFAR-10, el cual contiene 60,000 imágenes a color de 32x32 píxeles divididas en 10 clases. 
 
-    Adquisición de Datos: Se descarga el dataset público CIFAR-10, el cual contiene 60,000 imágenes de 32x32 píxeles etiquetadas en 10 categorías (Automóviles, Camiones, Aviones, etc.).
-    Preprocesamiento: Las imágenes se normalizan (dividiendo los valores de píxeles por 255) para facilitar el cálculo matemático.
-    Arquitectura del Modelo:
-        Capas Conv2D: Detectan patrones visuales como bordes, ruedas y parabrisas.
-        Capas MaxPooling: Reducen la dimensionalidad para retener las características más importantes y reducir el tiempo de cómputo.
-        Capas Dense: Toman las características extraídas y deciden la clase final.
-    Guardado: Una vez entrenado, la "inteligencia" (pesos de la red) se guarda en el archivo modelo_vehiculos.keras.
+    
+   Aqui el codigo de la construccion del modelo 
+ def construir_modelo():
+    model = models.Sequential([
+    
+        layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.Flatten(),  
+        layers.Dense(64, activation='relu'), 
+        layers.Dense(10)  
+    ])
+    return model
+    
+Explicación del funcionamiento: 
 
-2. Fase de Predicción Offline (predecir_imagen.py)
-
-    Carga del Modelo: El script lee el archivo .keras desde el disco duro, sin necesidad de conexión.
-    Interfaz Gráfica: Utiliza tkinter para abrir una ventana nativa de selección de archivos.
-    Procesamiento: Toma la imagen seleccionada por el usuario, la redimensiona a 32x32 píxeles y la normaliza.
-    Inferencia: El modelo predice la clase y devuelve el resultado con un porcentaje de confianza.
-
-🛠️ Instalación y Configuración
-
-Este proyecto está optimizado para Python 3.12.
-
-    Clonar o descargar el repositorio.
-    Crear un entorno virtual (Recomendado):
-
-    python -m venv .venv.venv\Scripts\activate
-
- 
-
-    Instalar las librerías necesarias:
-    bash
+     Conv2D: Aplica filtros a la imagen para extraer características (bordes, curvas).
+     MaxPooling2D: Reduce el tamaño de la imagen calculando el máximo valor en una ventana, lo que reduce el costo computacional y ayuda a evitar el sobreajuste.
+     Dense (Capa densa): Las últimas capas toman las características extraídas y deciden la clasificación final.
      
-      
 
-    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow numpy pillow matplotlib
-     
-     
-      
+El segundo componente del software es el agente que interactúa con el usuario. Este script no requiere internet, ya que carga el archivo modelo_vehiculos.keras generado previamente. 
 
-🚀 Cómo usar el proyecto 
-Paso 1: Entrenar (Se requiere Internet la primera vez) 
+El flujo de trabajo del agente es el siguiente: 
 
-Ejecuta el script de entrenamiento para generar el modelo. 
-bash
+    Carga del Modelo: Se lee el archivo binario que contiene los pesos de la red neuronal. 
+    Interfaz de Usuario (GUI): Se utiliza la librería tkinter para abrir un explorador de archivos y permitir la selección de una imagen local. 
+    Pre-procesamiento: La imagen seleccionada por el usuario (que puede tener cualquier tamaño) debe transformarse para coincidir con el formato de entrada del modelo (32x32 píxeles y valores normalizados entre 0 y 1). 
  
-  
-python entrenar_vehiculos.py
- 
- 
- 
+def predecir_imagen(model, image_path):
+   Aqui el codigo para que pueda predecir la imagen enviada por el usuario
+    img = Image.open(image_path).convert('RGB').resize((32, 32))
+    
+    img_array = np.array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
 
-El resultado esperado es una precisión del ~70-72% y la creación del archivo modelo_vehiculos.keras. 
-
-  
-Paso 2: Predecir (Modo Offline) 
-
-Una vez entrenado, puedes desconectar internet. Ejecuta el script de predicción. 
-bash
- 
-  
-python predecir_imagen.py
+   
+    predictions = model.predict(img_array, verbose=0)
+    score = tf.nn.softmax(predictions[0])
+    
+    return class_names[np.argmax(score)], 100 * np.max(score)
  
  
- 
+  Ejemplos de Uso 
 
-Se abrirá una ventana para que selecciones una imagen (JPG/PNG) de tu computadora. 
+El sistema permite dos flujos de uso principales: 
 
+    Entrenamiento: 
+         El ingeniero ejecuta el primer script.
+         El sistema descarga CIFAR-10 y muestra el progreso de precisión (accuracy) epoch tras epoch.
+         Al finalizar, se genera el archivo modelo_vehiculos.keras.
+          
 
-⚠️ Limitaciones del Modelo 
+    Operación del Agente: 
+         El usuario ejecuta el segundo script.
+         Aparece una ventana emergente para buscar una imagen (ej. una foto de un auto guardada en el escritorio).
+         
+        El agente responde en la consola:
+        ---------------- RESULTADO ----------------
+        Archivo: mi_auto.jpg
+        El modelo detecta: AUTOMÓVIL
+        Confianza: 85.42% 
+        text
+         
+          
 
-Es importante entender las restricciones de este prototipo escolar: 
+                                                                                                                         
+Conclusiones                      
+El desarrollo de este proyecto ha permitido consolidar conocimientos prácticos sobre el ciclo de vida de un sistema de Inteligencia Artificial, desde la adquisición de datos hasta el despliegue de un modelo funcional. 
 
-    Resolución Baja: El modelo fue entrenado con imágenes de 32x32 píxeles. Si se suben fotos de muy alta resolución con muchos detalles ruidosos, la red puede perder precisión. 
-    Ángulo de Cámara: El dataset original contiene principalmente imágenes en vista lateral. Las fotos frontales, aéreas o en perspectiva diagonal pueden generar clasificaciones erróneas. 
-    Precisión: Con una precisión de ~72%, el modelo puede equivocarse 3 de cada 10 veces, especialmente si el fondo de la imagen es muy complejo. 
-    Clases Limitadas: El modelo solo distingue 10 clases específicas del dataset CIFAR-10 (Avión, Auto, Pájaro, Gato, Ciervo, Perro, Rana, Caballo, Barco, Camión). 
-    🔮 Futuras Mejoras 
-
-Para expandir el proyecto en cursos superiores: 
-
-     Implementar Data Augmentation para mejorar la precisión.
-     Utilizar Transfer Learning con modelos pre-entrenados (ResNet, VGG16) para manejar imágenes de mayor resolución.
-     Crear una interfaz gráfica completa (GUI) con PyQt en lugar de la consola.
+     Eficacia de las CNN: Se comprobó que las Redes Neuronales Convolucionales son herramientas potentes para la clasificación de imágenes, logrando aprender patrones visuales complejos con una arquitectura relativamente sencilla (aprox. 3 capas convolucionales).
+     Portabilidad y Offline: Al separar la fase de entrenamiento de la fase de inferencia y guardar el modelo en formato .keras, se logró crear un agente autónomo. Esto es crítico en aplicaciones reales donde el acceso a internet puede ser limitado o donde la privacidad de los datos requiere que el procesamiento sea local.
+     Limitaciones y Futuro: El modelo actual trabaja con resoluciones bajas (32x32). Para un entorno de producción real o ingeniería avanzada, se recomienda el uso de Transfer Learning (usar modelos pre-entrenados como ResNet o VGG16) para mejorar la precisión en imágenes de alta resolución.
      
